@@ -12,13 +12,9 @@ namespace ynab
     {
         HttpClient _client;
 
-        public YNABClient(string accessToken)
+        public YNABClient(HttpClient client)
         {
-            _client = new HttpClient();
-            _client.BaseAddress = new Uri("https://api.youneedabudget.com/v1/");
-            _client.DefaultRequestHeaders.Authorization
-                         = new AuthenticationHeaderValue("Bearer", accessToken);
-
+            _client = client;
         }
 
         public void Dispose()
