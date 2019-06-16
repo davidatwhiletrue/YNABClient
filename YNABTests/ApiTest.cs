@@ -8,7 +8,7 @@ using ynab;
 namespace YNABTests
 {     
     [TestClass]
-    public class UnitTest1
+    public class ApiTest
     {
         static YNABClient _client;
 
@@ -29,6 +29,50 @@ namespace YNABTests
             mockHttp.When(baseAddress + "budgets")
                     .WithHeaders("Authorization: Bearer aabbccddeeff")
                     .Respond("application/json", "{'data' : {'budgets': [] } }"); // Respond with JSON
+
+            mockHttp.When(baseAddress + "budgets/aaa-bbb/settings")
+                    .WithHeaders("Authorization: Bearer aabbccddeeff")
+                    .Respond("application/json", MockJsonData.BudgetSettingsResponse);
+
+            mockHttp.When(baseAddress + "budgets/aaa-bbb/accounts")
+                    .WithHeaders("Authorization: Bearer aabbccddeeff")
+                    .Respond("application/json", MockJsonData.AccountsResponse);
+
+            mockHttp.When(baseAddress + "budgets/aaa-bbb/accounts/aaa-bbb-ccc")
+                    .WithHeaders("Authorization: Bearer aabbccddeeff")
+                    .Respond("application/json", MockJsonData.AccountResponse);
+
+            mockHttp.When(baseAddress + "budgets/aaa-bbb/categories")
+                    .WithHeaders("Authorization: Bearer aabbccddeeff")
+                    .Respond("application/json", MockJsonData.CategoriesResponse);
+
+            mockHttp.When(baseAddress + "budgets/aaa-bbb/categories/aaa-bbb-ccc")
+                    .WithHeaders("Authorization: Bearer aabbccddeeff")
+                    .Respond("application/json", MockJsonData.CategoryResponse);
+
+            mockHttp.When(baseAddress + "budgets/aaa-bbb/months/current/categories/aaa-bbb-ccc")
+                    .WithHeaders("Authorization: Bearer aabbccddeeff")
+                    .Respond("application/json", MockJsonData.CategoryResponse);
+
+            mockHttp.When(baseAddress + "budgets/aaa-bbb/months")
+                    .WithHeaders("Authorization: Bearer aabbccddeeff")
+                    .Respond("application/json", MockJsonData.BudgetMonthsResponse);
+
+            mockHttp.When(baseAddress + "budgets/aaa-bbb/months/current")
+                    .WithHeaders("Authorization: Bearer aabbccddeeff")
+                    .Respond("application/json", MockJsonData.BudgetMonthResponse);
+
+            mockHttp.When(baseAddress + "budgets/aaa-bbb/payees?last_knowledge_of_server=3000")
+                    .WithHeaders("Authorization: Bearer aabbccddeeff")
+                    .Respond("application/json", MockJsonData.PayeesResponseWithLastKnowledgeOfServer);
+
+            mockHttp.When(baseAddress + "budgets/aaa-bbb/payees")
+                    .WithHeaders("Authorization: Bearer aabbccddeeff")
+                    .Respond("application/json", MockJsonData.PayeesResponse);
+
+            mockHttp.When(baseAddress + "budgets/aaa-bbb/payees/hhh-iii-jjj")
+                    .WithHeaders("Authorization: Bearer aabbccddeeff")
+                    .Respond("application/json", MockJsonData.PayeeResponse2);
 
             mockHttp
                     .Fallback
@@ -68,6 +112,124 @@ namespace YNABTests
             Assert.IsNotNull(r.Data);
             Assert.IsNotNull(r.Data.Budgets);
             Assert.AreEqual(0, r.Data.Budgets.Count);
+        }
+
+        [TestMethod]
+        public async Task GetBudgetSettings()
+        {
+            var r = await _client.GetBudgetSettingsById("aaa-bbb");
+
+            Assert.IsNotNull(r.Data.Settings);
+            Assert.AreEqual("123 456,78", r.Data.Settings.CurrencyFormat.ExampleFormat);
+        }
+
+
+        [TestMethod]
+        public async Task GetAccounts()
+        {
+            var r = await _client.GetAccounts("aaa-bbb");
+
+            Assert.IsNotNull(r.Data.Accounts);
+            Assert.AreEqual(3, r.Data.Accounts.Count);
+            Assert.AreEqual("aaa-bbb-ccc", r.Data.Accounts[0].Id);
+        }
+
+        [TestMethod]
+        public async Task GetAccount()
+        {
+            var r = await _client.GetAccount("aaa-bbb", "aaa-bbb-ccc");
+
+            Assert.IsNotNull(r.Data.Account);
+            Assert.AreEqual("aaa-bbb-ccc", r.Data.Account.Id);
+        }
+
+        [TestMethod]
+        public async Task GetCategories()
+        {
+            var r = await _client.GetCategories("aaa-bbb");
+
+            Assert.IsNotNull(r.Data.CategoryGroups);
+            Assert.AreEqual(2, r.Data.CategoryGroups.Count);
+            Assert.AreEqual("eee-eee-eee", r.Data.CategoryGroups[0].Id);
+            Assert.AreEqual("Group Category", r.Data.CategoryGroups[0].Name);
+            Assert.AreEqual(3, r.Data.CategoryGroups[0].Categories.Count);
+            Assert.AreEqual("eee-fff-ggg", r.Data.CategoryGroups[0].Categories[2].Id);
+            Assert.AreEqual("Family leisure", r.Data.CategoryGroups[0].Categories[2].Name);
+        }
+
+        [TestMethod]
+        public async Task GetCategory()
+        {
+            var r = await _client.GetCategoryById("aaa-bbb", "aaa-bbb-ccc");
+
+            Assert.IsNotNull(r.Data.Category);
+            Assert.AreEqual("eee-fff-ggg", r.Data.Category.Id);
+            Assert.AreEqual("bbb-ccc-ddd", r.Data.Category.CategoryGroupId);
+            Assert.AreEqual("Family leisure", r.Data.Category.Name);
+        }
+
+        [TestMethod]
+        public async Task GetMonthCategory()
+        {
+            var r = await _client.GetMonthCategoryById("aaa-bbb", "current", "aaa-bbb-ccc");
+
+            Assert.IsNotNull(r.Data.Category);
+            Assert.AreEqual("eee-fff-ggg", r.Data.Category.Id);
+            Assert.AreEqual("bbb-ccc-ddd", r.Data.Category.CategoryGroupId);
+            Assert.AreEqual("Family leisure", r.Data.Category.Name);
+        }
+
+        [TestMethod]
+        public async Task GetBudgetMonths()
+        {
+            var r = await _client.GetBudgetMonths("aaa-bbb");
+
+            Assert.IsNotNull(r.Data.Months);
+            Assert.AreEqual(2, r.Data.Months.Count);
+            Assert.AreEqual("2019-06-01", r.Data.Months[0].Month);
+            Assert.AreEqual(150000, r.Data.Months[0].Budgeted);
+        }
+
+        [TestMethod]
+        public async Task GetBudgetMonth()
+        {
+            var r = await _client.GetBudgetMonth("aaa-bbb", "current");
+
+            Assert.IsNotNull(r.Data.Month);
+            Assert.AreEqual("2019-06-01", r.Data.Month.Month);
+            Assert.AreEqual(150000, r.Data.Month.Budgeted);
+        }
+
+        [TestMethod]
+        public async Task GetPayees()
+        {
+            var r = await _client.GetPayees("aaa-bbb");
+
+            Assert.IsNotNull(r.Data.Payees);
+            Assert.AreEqual(2, r.Data.Payees.Count);
+            Assert.AreEqual("hhh-iii-iii", r.Data.Payees[0].Id);
+            Assert.AreEqual("hhh-iii-jjj", r.Data.Payees[1].Id);
+            Assert.AreEqual(3000, r.Data.ServerKnowledge);
+        }
+
+        [TestMethod]
+        public async Task GetPayeesWithLastKnowledgeOfServer()
+        {
+            var r = await _client.GetPayees("aaa-bbb", "3000");
+
+            Assert.IsNotNull(r.Data.Payees);
+            Assert.AreEqual(1, r.Data.Payees.Count);
+            Assert.AreEqual("hhh-iii-jjj", r.Data.Payees[0].Id);
+            Assert.AreEqual(4000, r.Data.ServerKnowledge);
+        }
+
+        [TestMethod]
+        public async Task GetPayee()
+        {
+            var r = await _client.GetPayeeById("aaa-bbb", "hhh-iii-jjj");
+
+            Assert.IsNotNull(r.Data.Payee);
+            Assert.AreEqual("hhh-iii-jjj", r.Data.Payee.Id);
         }
     }
 }
