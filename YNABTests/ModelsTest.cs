@@ -8,6 +8,36 @@ namespace YNABTests
     [TestClass]
     public class ModelsTest
     {
+        [TestMethod]
+        public void BudgetSettings()
+        {
+            var json = MockJsonData.BudgetSettings;
+            var budgetSettings = JsonConvert.DeserializeObject<BudgetSettings>(json);
+
+            Assert.IsNotNull(budgetSettings);
+            Assert.IsNotNull(budgetSettings.DateFormat);
+            Assert.AreEqual("DD/MM/YYYY", budgetSettings.DateFormat.Format);
+            Assert.IsNotNull(budgetSettings.CurrencyFormat);
+            Assert.AreEqual("EUR", budgetSettings.CurrencyFormat.IsoCode);
+            Assert.AreEqual("123 456,78", budgetSettings.CurrencyFormat.ExampleFormat);
+            Assert.AreEqual(2, budgetSettings.CurrencyFormat.DecimalDigits);
+            Assert.AreEqual(",", budgetSettings.CurrencyFormat.DecimalSeparator);
+            Assert.AreEqual(false, budgetSettings.CurrencyFormat.SymbolFirst);
+            Assert.AreEqual(" ", budgetSettings.CurrencyFormat.GroupSeparator);
+            Assert.AreEqual(true, budgetSettings.CurrencyFormat.DisplaySymbol);
+            Assert.AreEqual("€", budgetSettings.CurrencyFormat.CurrencySymbol);
+        }
+
+        [TestMethod]
+        public void BudgetSettingsResponse()
+        {
+            var json = MockJsonData.BudgetSettingsResponse;
+            var budgetSettingsResponse = JsonConvert.DeserializeObject<BudgetSettingsResponse>(json);
+
+            Assert.IsNotNull(budgetSettingsResponse);
+            Assert.IsNotNull(budgetSettingsResponse.Data);
+            Assert.IsNotNull(budgetSettingsResponse.Data.Settings);
+        }
 
         [TestMethod]
         public void Account()
@@ -120,8 +150,6 @@ namespace YNABTests
             Assert.AreEqual("aaa-bbb-ccc", payee2.Data.Payee.TransferAccountId);
         }
 
-
-
         [TestMethod]
         public void PayeesResponse()
         {
@@ -137,6 +165,49 @@ namespace YNABTests
             Assert.AreEqual("hhh-iii-jjj", payees.Data.Payees[1].Id);
             Assert.AreEqual("Transfer : Payroll account", payees.Data.Payees[1].Name);
             Assert.AreEqual("aaa-bbb-ccc", payees.Data.Payees[1].TransferAccountId);
+        }
+
+        [TestMethod]
+        public void SubTransaction()
+        {
+            var json1 = MockJsonData.SubTransaction1;
+            var subtransaction1 = JsonConvert.DeserializeObject<SubTransaction>(json1);
+
+            Assert.IsNotNull(subtransaction1);
+            Assert.AreEqual("subtransaction-id-1", subtransaction1.Id);
+            Assert.AreEqual("transaction-id-1", subtransaction1.TransactionId);
+            Assert.AreEqual(-76600, subtransaction1.Amount);
+            Assert.AreEqual("memo subtransaction-1", subtransaction1.Memo);
+            Assert.AreEqual("payee-id-1", subtransaction1.PayeeId);
+            Assert.AreEqual("category-id-1", subtransaction1.CategoryId);
+            Assert.IsNull(subtransaction1.TransferAccountId);
+            Assert.IsFalse(subtransaction1.Deleted);
+
+            var json2 = MockJsonData.SubTransaction2;
+            var subtransaction2 = JsonConvert.DeserializeObject<SubTransaction>(json2);
+
+            Assert.IsNotNull(subtransaction2);
+            Assert.AreEqual("subtransaction-id-2", subtransaction2.Id);
+            Assert.AreEqual("transaction-id-1", subtransaction2.TransactionId);
+            Assert.AreEqual(-6000, subtransaction2.Amount);
+            Assert.AreEqual("memo subtransaction-2", subtransaction2.Memo);
+            Assert.AreEqual("payee-id-2", subtransaction2.PayeeId);
+            Assert.AreEqual("category-id-2", subtransaction2.CategoryId);
+            Assert.IsNull(subtransaction2.TransferAccountId);
+            Assert.IsFalse(subtransaction2.Deleted);
+        }
+
+        [TestMethod]
+        public void Transaction()
+        {
+            var json1 = MockJsonData.Transaction1;
+            var transaction1 = JsonConvert.DeserializeObject<TransactionDetail>(json1);
+
+            Assert.IsNotNull(transaction1);
+            Assert.AreEqual("transaction-id-1", transaction1.Id);
+            Assert.AreEqual(2, transaction1.SubTransactions.Count);
+            Assert.AreEqual("subtransaction-id-1", transaction1.SubTransactions[0].Id);
+            Assert.AreEqual("subtransaction-id-2", transaction1.SubTransactions[1].Id);
         }
     }
 }

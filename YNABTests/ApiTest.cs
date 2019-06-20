@@ -1,12 +1,15 @@
 using System;
+using System.Diagnostics;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RichardSzalay.MockHttp;
 using ynab;
 
 namespace YNABTests
-{     
+{
     [TestClass]
     public class ApiTest
     {
@@ -23,7 +26,7 @@ namespace YNABTests
 
             // Setup a respond for the user api (including a wildcard in the URL)
             mockHttp.When(baseAddress + "user")
-                    .WithHeaders("Authorization: Bearer aabbccddeeff")    
+                    .WithHeaders("Authorization: Bearer aabbccddeeff")
                     .Respond("application/json", "{'data' : {'user': {'id': '1'} } }"); // Respond with JSON
 
             mockHttp.When(baseAddress + "budgets")
@@ -74,9 +77,26 @@ namespace YNABTests
                     .WithHeaders("Authorization: Bearer aabbccddeeff")
                     .Respond("application/json", MockJsonData.PayeeResponse2);
 
+            mockHttp.When(baseAddress + "budgets/aaa-bbb/transactions")
+                    .WithHeaders("Authorization: Bearer aabbccddeeff")
+                    .Respond("application/json", MockJsonData.TransactionsResponse);
+
+            mockHttp.When(baseAddress + "budgets/aaa-bbb/transactions/transaction-id-1")
+                    .WithHeaders("Authorization: Bearer aabbccddeeff")
+                    .Respond("application/json", MockJsonData.TransactionResponse);
+
+            mockHttp.When(baseAddress + "budgets/aaa-bbb/accounts/account-id-1/transactions")
+                    .WithHeaders("Authorization: Bearer aabbccddeeff")
+                    .WithQueryString("since_date=2019-06-01&type=approved")
+                    .Respond("application/json", MockJsonData.TransactionsResponse);
+                    /*.Respond((req) =>
+                    {
+                        return new StringContent(req.ToString(), Encoding.UTF8, "application/json");
+                    });*/
+
             mockHttp
                     .Fallback
-                    .Respond("application/json", "{'error' : {'id':'401', 'name':'unauthorized', 'detail':'Unauthorized' } }");
+                    .Throw(new YNABClientException("{'error' : {'id':'404.2', 'name':'resource_not_found', 'detail':'Resource not found' } }"));
 
             var httpClient = mockHttp.ToHttpClient();
             httpClient.BaseAddress = new Uri(baseAddress);
@@ -230,6 +250,45 @@ namespace YNABTests
 
             Assert.IsNotNull(r.Data.Payee);
             Assert.AreEqual("hhh-iii-jjj", r.Data.Payee.Id);
+        }
+
+        [TestMethod]
+        public async Task GetTransactions()
+        {
+            var r = await _client.GetTransactions("aaa-bbb", "3000");
+
+            Assert.IsNotNull(r.Data.Transactions);
+            Assert.AreEqual(2, r.Data.Transactions.Count);
+            Assert.AreEqual("transaction-id-1", r.Data.Transactions[0].Id);
+            Assert.AreEqual("transaction-id-1", r.Data.Transactions[1].Id);
+        }
+
+        [TestMethod]
+        public async Task GetTransaction()
+        {
+            var r = await _client.GetTransactionById("aaa-bbb", "transaction-id-1");
+
+            Assert.IsNotNull(r.Data.Transaction);
+            Assert.AreEqual("transaction-id-1", r.Data.Transaction.Id);
+        }
+
+        [TestMethod]
+        public async Task GetTransactionsByAccount()
+        {
+            try
+            {
+                var r = await _client.GetTransactionsByAccount("aaa-bbb", "account-id-1", "2019-06-01", "approved");
+
+                Assert.IsNotNull(r.Data.Transactions);
+                Assert.AreEqual(2, r.Data.Transactions.Count);
+                Assert.AreEqual("transaction-id-1", r.Data.Transactions[0].Id);
+                Assert.AreEqual("transaction-id-1", r.Data.Transactions[1].Id);
+            }
+            catch (Exception e)
+            {
+                Debug.Print(e.Message);
+            }
+
         }
     }
 }

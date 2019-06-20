@@ -25,7 +25,7 @@ namespace ynab
         {
             var response = await _client.GetAsync("user");
 
-            if(!response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
                 var j = await response.Content.ReadAsStringAsync();
                 throw new YNABClientException(j);
@@ -187,7 +187,7 @@ namespace ynab
             return monthResponse;
         }
 
-        public async Task<PayeesResponse> GetPayees(string budgetId, string last_knowledge_of_server=null)
+        public async Task<PayeesResponse> GetPayees(string budgetId, string last_knowledge_of_server = null)
         {
             var query = $"budgets/{budgetId}/payees";
             if (last_knowledge_of_server != null)
@@ -223,6 +223,89 @@ namespace ynab
             var payeeResponse = JsonConvert.DeserializeObject<PayeeResponse>(json);
 
             return payeeResponse;
+        }
+
+        public async Task<TransactionsResponse> GetTransactions(string budgetId, string last_knowledge_of_server = null)
+        {
+            var query = $"budgets/{budgetId}/transactions";
+            if (last_knowledge_of_server != null)
+                query += $"?last_knowledge_of_server={last_knowledge_of_server}";
+
+            var response = await _client.GetAsync(query);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var j = await response.Content.ReadAsStringAsync();
+                throw new YNABClientException(j);
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            var transactionsResponse = JsonConvert.DeserializeObject<TransactionsResponse>(json);
+
+            return transactionsResponse;
+        }
+
+        public async Task<TransactionResponse> GetTransactionById(string budgetId, string transactionId)
+        {
+            var query = $"budgets/{budgetId}/transactions/{transactionId}";
+
+            var response = await _client.GetAsync(query);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var j = await response.Content.ReadAsStringAsync();
+                throw new YNABClientException(j);
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            var transactionResponse = JsonConvert.DeserializeObject<TransactionResponse>(json);
+
+            return transactionResponse;
+        }
+
+        public async Task<TransactionsResponse> GetTransactionsByAccount(string budgetId, string accountId, string since_date, string type, string last_knowledge_of_server = null)
+        {
+            UriBuilder baseUri = new UriBuilder($"{_client.BaseAddress}budgets/{budgetId}/accounts/{accountId}");
+
+            if (since_date != null)
+            {
+                if (baseUri.Query != null && baseUri.Query.Length > 1)
+                    baseUri.Query = baseUri.Query.Substring(1) + "&" + $"since_date={since_date}";
+                else
+                    baseUri.Query = $"since_date={since_date}";
+            }
+
+            if (type != null)
+            {
+                if (baseUri.Query != null && baseUri.Query.Length > 1)
+                    baseUri.Query = baseUri.Query.Substring(1) + "&" + $"type={type}";
+                else
+                    baseUri.Query = $"type={type}";
+            }
+
+            if (last_knowledge_of_server != null)
+            {
+                if (baseUri.Query != null && baseUri.Query.Length > 1)
+                    baseUri.Query = baseUri.Query.Substring(1) + "&" + $"last_knowledge_of_server={last_knowledge_of_server}";
+                else
+                    baseUri.Query = $"last_knowledge_of_server={last_knowledge_of_server}";
+            }
+
+            var response = await _client.GetAsync(baseUri.Uri);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var j = await response.Content.ReadAsStringAsync();
+                throw new YNABClientException(j);
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            var transactionsResponse = JsonConvert.DeserializeObject<TransactionsResponse>(json);
+
+            return transactionsResponse;
         }
     }
 }

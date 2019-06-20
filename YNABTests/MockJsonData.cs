@@ -3,23 +3,46 @@ namespace YNABTests
 {
     public static class MockJsonData
     {
+        public static string BudgetSettings = @"{
+            ""date_format"": {
+                ""format"": ""DD/MM/YYYY""
+            },
+            ""currency_format"": {
+                ""iso_code"": ""EUR"",
+                ""example_format"": ""123 456,78"",
+                ""decimal_digits"": 2,
+                ""decimal_separator"": "","",
+                ""symbol_first"": false,
+                ""group_separator"": "" "",
+                ""currency_symbol"": ""€"",
+                ""display_symbol"": true
+            }
+        }";
+
         public static string BudgetSettingsResponse = @"{
             ""data"": {
-                ""settings"": {
-                    ""date_format"": {
-                        ""format"": ""DD/MM/YYYY""
-                    },
-                    ""currency_format"": {
-                        ""iso_code"": ""EUR"",
-                        ""example_format"": ""123 456,78"",
-                        ""decimal_digits"": 2,
-                        ""decimal_separator"": "","",
-                        ""symbol_first"": false,
-                        ""group_separator"": "" "",
-                        ""currency_symbol"": ""€"",
-                        ""display_symbol"": true
-                    }
-                }
+                ""settings"": " + BudgetSettings + @"
+            }
+        }";
+
+        public static string BudgetSummary = @"{
+            ""id"": ""3edd94ad-1fe7-42b4-9a74-e72016722db8"",
+            ""name"": ""Presup. familiar '19"",
+            ""last_modified_on"": ""2019-06-18T15:13:20+00:00"",
+            ""first_month"": ""2018-12-01"",
+            ""last_month"": ""2019-06-01"",
+            ""date_format"": {
+                ""format"": ""DD/MM/YYYY""
+            },
+            ""currency_format"": {
+                ""iso_code"": ""EUR"",
+                ""example_format"": ""123 456,78"",
+                ""decimal_digits"": 2,
+                ""decimal_separator"": "","",
+                ""symbol_first"": false,
+                ""group_separator"": "" "",
+                ""currency_symbol"": ""€"",
+                ""display_symbol"": true
             }
         }";
 
@@ -65,6 +88,13 @@ namespace YNABTests
 
         public static string CategoryResponse = @"{
             ""data"" : { ""category"" : " + Category + @" }
+        }";
+
+        public static string CategoryGroup = @"{
+                ""id"": ""eee-eee-eee"",
+                ""name"": ""Group Category"",
+                ""hidden"": false,
+                ""deleted"": false
         }";
 
         public static string CategoryGroupWithCategories = @"{
@@ -148,5 +178,62 @@ namespace YNABTests
                          ""server_knowledge"": 4000
             }
         }";
+
+        public static string SubTransaction1 = @"{
+            ""id"": ""subtransaction-id-1"",
+            ""transaction_id"": ""transaction-id-1"",
+            ""amount"": -76600,
+            ""memo"": ""memo subtransaction-1"",
+            ""payee_id"": ""payee-id-1"",
+            ""category_id"": ""category-id-1"",
+            ""transfer_account_id"": null,
+            ""transfer_transaction_id"": null,
+            ""deleted"": false
+        }";
+
+        public static string SubTransaction2 = @"{
+            ""id"": ""subtransaction-id-2"",
+            ""transaction_id"": ""transaction-id-1"",
+            ""amount"": -6000,
+            ""memo"": ""memo subtransaction-2"",
+            ""payee_id"": ""payee-id-2"",
+            ""category_id"": ""category-id-2"",
+            ""transfer_account_id"": null,
+            ""transfer_transaction_id"": null,
+            ""deleted"": false
+        }";
+
+        public static string Transaction1 = @"{
+            ""id"": ""transaction-id-1"",
+            ""date"": ""2019-06-04"",
+            ""amount"": -92600,
+            ""memo"": ""memo transaction 1"",
+            ""cleared"": ""reconciled"",
+            ""approved"": true,
+            ""flag_color"": null,
+            ""account_id"": ""aaa-bbb-ccc"",
+            ""account_name"": ""Payroll account"",
+            ""payee_id"": ""payee-id-1"",
+            ""payee_name"": ""Payee 1"",
+            ""category_id"": ""category-split-id-1"",
+            ""category_name"": ""Split (Multiple Categories)..."",
+            ""transfer_account_id"": null,
+            ""transfer_transaction_id"": null,
+            ""matched_transaction_id"": null,
+            ""import_id"": null,
+            ""deleted"": false,        
+            ""subtransactions"": [" + SubTransaction1 + ", " + SubTransaction2 + @"]
+        }";
+
+        public static string TransactionsResponse = @"{
+            ""data"": { ""transactions"" : [" + Transaction1 + ", " + Transaction1 + @"],
+                ""server_knowledge"": 2000
+            }
+        }";
+
+        public static string TransactionResponse = @"{
+            ""data"" : { ""transaction"" : " + Transaction1 + @"}
+        }";
+
     }
 }

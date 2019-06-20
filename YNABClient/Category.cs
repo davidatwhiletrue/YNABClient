@@ -31,7 +31,7 @@ namespace ynab
         public long Activity { get; set; }
 
         [JsonProperty("balance")]
-        public long Balance{ get; set; }
+        public long Balance { get; set; }
 
         [JsonProperty("goal_type")]
         public string GoalType { get; set; }
@@ -79,20 +79,8 @@ namespace ynab
         public bool Deleted { get; set; }
     }
 
-    public class CategoryGroupWithCategories
+    public class CategoryGroupWithCategories : CategoryGroup
     {
-        [JsonProperty("id")]
-        public string Id { get; set; }
-
-        [JsonProperty("name")]
-        public string Name { get; set; }
-
-        [JsonProperty("hidden")]
-        public bool Hidden { get; set; }
-
-        [JsonProperty("deleted")]
-        public bool Deleted { get; set; }
-
         [JsonProperty("categories")]
         public List<Category> Categories { get; set; }
     }
