@@ -3,6 +3,16 @@ namespace YNABTests
 {
     public static class MockJsonData
     {
+        public static string User = @"{
+            ""id"" : ""user-id-1""
+        }";
+
+        public static string UserResponse = @"{
+            ""data"" : {
+                ""user"" : " + User + @"
+            }
+        }";
+
         public static string BudgetSettings = @"{
             ""date_format"": {
                 ""format"": ""DD/MM/YYYY""
@@ -26,9 +36,9 @@ namespace YNABTests
         }";
 
         public static string BudgetSummary = @"{
-            ""id"": ""3edd94ad-1fe7-42b4-9a74-e72016722db8"",
-            ""name"": ""Presup. familiar '19"",
-            ""last_modified_on"": ""2019-06-18T15:13:20+00:00"",
+            ""id"": ""budget-id-1"",
+            ""name"": ""Budget Name 1"",
+            ""last_modified_on"": ""2019-01-01T23:59:59+00:00"",
             ""first_month"": ""2018-12-01"",
             ""last_month"": ""2019-06-01"",
             ""date_format"": {
@@ -44,6 +54,16 @@ namespace YNABTests
                 ""currency_symbol"": ""€"",
                 ""display_symbol"": true
             }
+        }";
+
+        public static string BudgetSummaryResponse = @"{
+            ""data"": {
+                ""budgets"": [" + BudgetSummary + ", " + BudgetSummary + ", " + BudgetSummary + @"]
+            }
+        }";
+
+        public static string BudgetDetail = @"{
+            
         }";
 
         public static string Account = @"{
@@ -235,5 +255,9 @@ namespace YNABTests
             ""data"" : { ""transaction"" : " + Transaction1 + @"}
         }";
 
+        public static string GetFields(this string jsonObject)
+        {
+            return jsonObject.Trim().Substring(1, jsonObject.Length - 2);
+        }
     }
 }

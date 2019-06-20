@@ -15,6 +15,12 @@ namespace ynab
         [JsonProperty("last_modified_on")]
         public string LastModifiedOn { get; set; }
 
+        [JsonProperty("first_month")]
+        public string FirstMonth { get; set; }
+
+        [JsonProperty("last_month")]
+        public string LastMonth { get; set; }
+
         [JsonProperty("date_format")]
         public DateFormat DateFormat { get; set; }
 

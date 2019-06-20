@@ -9,6 +9,28 @@ namespace YNABTests
     public class ModelsTest
     {
         [TestMethod]
+        public void User()
+        {
+            var json = MockJsonData.User;
+            var user = JsonConvert.DeserializeObject<User>(json);
+
+            Assert.IsNotNull(user);
+            Assert.AreEqual("user-id-1", user.Id);
+        }
+
+        [TestMethod]
+        public void UserResponse()
+        {
+            var json = MockJsonData.UserResponse;
+            var userResponse = JsonConvert.DeserializeObject<UserResponse>(json);
+
+            Assert.IsNotNull(userResponse);
+            Assert.IsNotNull(userResponse.Data);
+            Assert.IsNotNull(userResponse.Data.User);
+            Assert.AreEqual("user-id-1", userResponse.Data.User.Id);
+        }
+
+        [TestMethod]
         public void BudgetSettings()
         {
             var json = MockJsonData.BudgetSettings;
@@ -37,6 +59,46 @@ namespace YNABTests
             Assert.IsNotNull(budgetSettingsResponse);
             Assert.IsNotNull(budgetSettingsResponse.Data);
             Assert.IsNotNull(budgetSettingsResponse.Data.Settings);
+        }
+
+        [TestMethod]
+        public void BudgetSummary()
+        {
+            var json = MockJsonData.BudgetSummary;
+            var budgetSummary = JsonConvert.DeserializeObject<BudgetSummary>(json);
+
+            Assert.IsNotNull(budgetSummary);
+            Assert.AreEqual("budget-id-1", budgetSummary.Id);
+            Assert.AreEqual("Budget Name 1", budgetSummary.Name);
+            Assert.AreEqual("2019-01-01T23:59:59+00:00", budgetSummary.LastModifiedOn);
+            Assert.AreEqual("2018-12-01", budgetSummary.FirstMonth);
+            Assert.AreEqual("2019-06-01", budgetSummary.LastMonth);
+            Assert.IsNotNull(budgetSummary.DateFormat);
+            Assert.AreEqual("DD/MM/YYYY", budgetSummary.DateFormat.Format);
+            Assert.IsNotNull(budgetSummary.CurrencyFormat);
+            Assert.AreEqual("EUR", budgetSummary.CurrencyFormat.IsoCode);
+            Assert.AreEqual("123 456,78", budgetSummary.CurrencyFormat.ExampleFormat);
+            Assert.AreEqual(2, budgetSummary.CurrencyFormat.DecimalDigits);
+            Assert.AreEqual(",", budgetSummary.CurrencyFormat.DecimalSeparator);
+            Assert.AreEqual(false, budgetSummary.CurrencyFormat.SymbolFirst);
+            Assert.AreEqual(" ", budgetSummary.CurrencyFormat.GroupSeparator);
+            Assert.AreEqual(true, budgetSummary.CurrencyFormat.DisplaySymbol);
+            Assert.AreEqual("€", budgetSummary.CurrencyFormat.CurrencySymbol);
+        }
+
+        [TestMethod]
+        public void BudgetSummaryResponse()
+        {
+            var json = MockJsonData.BudgetSummaryResponse;
+            var budgetsResponse = JsonConvert.DeserializeObject<BudgetSummaryResponse>(json);
+
+            Assert.IsNotNull(budgetsResponse);
+            Assert.IsNotNull(budgetsResponse.Data);
+            Assert.IsNotNull(budgetsResponse.Data.Budgets);
+            Assert.AreEqual(3, budgetsResponse.Data.Budgets.Count);
+            Assert.AreEqual("budget-id-1", budgetsResponse.Data.Budgets[0].Id);
+            Assert.AreEqual("budget-id-1", budgetsResponse.Data.Budgets[1].Id);
+            Assert.AreEqual("budget-id-1", budgetsResponse.Data.Budgets[2].Id);
         }
 
         [TestMethod]

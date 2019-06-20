@@ -22,16 +22,13 @@ namespace YNABTests
 
             var mockHttp = new MockHttpMessageHandler();
 
-            var tokenMatcher = new RichardSzalay.MockHttp.Matchers.HeadersMatcher("Authorization: Bearer aabbccddeeff");
-
-            // Setup a respond for the user api (including a wildcard in the URL)
             mockHttp.When(baseAddress + "user")
                     .WithHeaders("Authorization: Bearer aabbccddeeff")
                     .Respond("application/json", "{'data' : {'user': {'id': '1'} } }"); // Respond with JSON
 
             mockHttp.When(baseAddress + "budgets")
                     .WithHeaders("Authorization: Bearer aabbccddeeff")
-                    .Respond("application/json", "{'data' : {'budgets': [] } }"); // Respond with JSON
+                    .Respond("application/json", MockJsonData.BudgetSummaryResponse); // Respond with JSON
 
             mockHttp.When(baseAddress + "budgets/aaa-bbb/settings")
                     .WithHeaders("Authorization: Bearer aabbccddeeff")
@@ -131,7 +128,7 @@ namespace YNABTests
             Assert.IsNotNull(r);
             Assert.IsNotNull(r.Data);
             Assert.IsNotNull(r.Data.Budgets);
-            Assert.AreEqual(0, r.Data.Budgets.Count);
+            Assert.AreEqual(3, r.Data.Budgets.Count);
         }
 
         [TestMethod]
