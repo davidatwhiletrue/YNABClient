@@ -8,11 +8,25 @@ namespace YNABTests
     [TestClass]
     public class ModelsTest
     {
+        private object _testObject;
+
+        [TestInitialize]
+        public void TestReset()
+        {
+            _testObject = null;
+        }
+
         [TestMethod]
         public void User()
         {
-            var json = MockJsonData.User;
-            var user = JsonConvert.DeserializeObject<User>(json);
+            User user;
+            if (_testObject == null)
+            {
+                var json = MockJsonData.User;
+                user = JsonConvert.DeserializeObject<User>(json);
+            }
+            else
+                user = _testObject as User;
 
             Assert.IsNotNull(user);
             Assert.AreEqual("user-id-1", user.Id);
@@ -27,14 +41,20 @@ namespace YNABTests
             Assert.IsNotNull(userResponse);
             Assert.IsNotNull(userResponse.Data);
             Assert.IsNotNull(userResponse.Data.User);
-            Assert.AreEqual("user-id-1", userResponse.Data.User.Id);
+            _testObject = userResponse.Data.User; this.User();
         }
 
         [TestMethod]
         public void BudgetSettings()
         {
-            var json = MockJsonData.BudgetSettings;
-            var budgetSettings = JsonConvert.DeserializeObject<BudgetSettings>(json);
+            BudgetSettings budgetSettings;
+            if (_testObject == null)
+            {
+                var json = MockJsonData.BudgetSettings;
+                budgetSettings = JsonConvert.DeserializeObject<BudgetSettings>(json);
+            }
+            else
+                budgetSettings = _testObject as BudgetSettings;
 
             Assert.IsNotNull(budgetSettings);
             Assert.IsNotNull(budgetSettings.DateFormat);
@@ -59,13 +79,20 @@ namespace YNABTests
             Assert.IsNotNull(budgetSettingsResponse);
             Assert.IsNotNull(budgetSettingsResponse.Data);
             Assert.IsNotNull(budgetSettingsResponse.Data.Settings);
+            _testObject = budgetSettingsResponse.Data.Settings; this.BudgetSettings();
         }
 
         [TestMethod]
         public void BudgetSummary()
         {
-            var json = MockJsonData.BudgetSummary;
-            var budgetSummary = JsonConvert.DeserializeObject<BudgetSummary>(json);
+            BudgetSummary budgetSummary;
+            if (_testObject == null)
+            {
+                var json = MockJsonData.BudgetSummary;
+                budgetSummary = JsonConvert.DeserializeObject<BudgetSummary>(json);
+            }
+            else
+                budgetSummary = _testObject as BudgetSummary;
 
             Assert.IsNotNull(budgetSummary);
             Assert.AreEqual("budget-id-1", budgetSummary.Id);
@@ -73,17 +100,8 @@ namespace YNABTests
             Assert.AreEqual("2019-01-01T23:59:59+00:00", budgetSummary.LastModifiedOn);
             Assert.AreEqual("2018-12-01", budgetSummary.FirstMonth);
             Assert.AreEqual("2019-06-01", budgetSummary.LastMonth);
-            Assert.IsNotNull(budgetSummary.DateFormat);
-            Assert.AreEqual("DD/MM/YYYY", budgetSummary.DateFormat.Format);
-            Assert.IsNotNull(budgetSummary.CurrencyFormat);
-            Assert.AreEqual("EUR", budgetSummary.CurrencyFormat.IsoCode);
-            Assert.AreEqual("123 456,78", budgetSummary.CurrencyFormat.ExampleFormat);
-            Assert.AreEqual(2, budgetSummary.CurrencyFormat.DecimalDigits);
-            Assert.AreEqual(",", budgetSummary.CurrencyFormat.DecimalSeparator);
-            Assert.AreEqual(false, budgetSummary.CurrencyFormat.SymbolFirst);
-            Assert.AreEqual(" ", budgetSummary.CurrencyFormat.GroupSeparator);
-            Assert.AreEqual(true, budgetSummary.CurrencyFormat.DisplaySymbol);
-            Assert.AreEqual("€", budgetSummary.CurrencyFormat.CurrencySymbol);
+
+            _testObject = budgetSummary; this.BudgetSettings();
         }
 
         [TestMethod]
@@ -96,16 +114,40 @@ namespace YNABTests
             Assert.IsNotNull(budgetsResponse.Data);
             Assert.IsNotNull(budgetsResponse.Data.Budgets);
             Assert.AreEqual(3, budgetsResponse.Data.Budgets.Count);
-            Assert.AreEqual("budget-id-1", budgetsResponse.Data.Budgets[0].Id);
-            Assert.AreEqual("budget-id-1", budgetsResponse.Data.Budgets[1].Id);
-            Assert.AreEqual("budget-id-1", budgetsResponse.Data.Budgets[2].Id);
+            budgetsResponse.Data.Budgets.ForEach(budget =>
+            {
+                Assert.IsNotNull(budget);
+                _testObject = budget; this.BudgetSummary();
+            });
+        }
+
+        [TestMethod]
+        public void BudgetDetail()
+        {
+            BudgetDetail budgetDetail;
+            if (_testObject == null)
+            {
+                var json = MockJsonData.BudgetDetail;
+                budgetDetail = JsonConvert.DeserializeObject<BudgetDetail>(json);
+            }
+            else
+                budgetDetail = _testObject as BudgetDetail;
+
+            Assert.IsNotNull(budgetDetail);
+            _testObject = budgetDetail; this.BudgetSummary();
         }
 
         [TestMethod]
         public void Account()
         {
-            var json = MockJsonData.Account;
-            var account = JsonConvert.DeserializeObject<Account>(json);
+            Account account;
+            if (_testObject == null)
+            {
+                var json = MockJsonData.Account;
+                account = JsonConvert.DeserializeObject<Account>(json);
+            }
+            else
+                account = _testObject as Account;
 
             Assert.IsNotNull(account);
             Assert.AreEqual("aaa-bbb-ccc", account.Id);
@@ -127,15 +169,26 @@ namespace YNABTests
             var accountResponse = JsonConvert.DeserializeObject<AccountResponse>(json);
 
             Assert.IsNotNull(accountResponse);
+            Assert.IsNotNull(accountResponse.Data);
+            Assert.IsNotNull(accountResponse.Data.Account);
+            _testObject = accountResponse.Data.Account; this.Account();
         }
 
         [TestMethod]
         public void Category()
         {
-            var json = MockJsonData.Category;
-            var category = JsonConvert.DeserializeObject<Category>(json);
+            Category category;
+            if (_testObject == null)
+            {
+                var json = MockJsonData.Category;
+                category = JsonConvert.DeserializeObject<Category>(json);
+            }
+            else
+                category = _testObject as Category;
 
             Assert.IsNotNull(category);
+            Assert.AreEqual("eee-fff-ggg", category.Id);
+            //TODO: Add missing assertions
         }
 
         [TestMethod]
@@ -145,42 +198,80 @@ namespace YNABTests
             var categoryResponse = JsonConvert.DeserializeObject<CategoryResponse>(json);
 
             Assert.IsNotNull(categoryResponse);
+            Assert.IsNotNull(categoryResponse.Data);
+            Assert.IsNotNull(categoryResponse.Data.Category);
+            _testObject = categoryResponse.Data.Category; this.Category();
+        }
+
+        [TestMethod]
+        public void CategoryGroup()
+        {
+            // TODO: complete test
         }
 
         [TestMethod]
         public void CategoryGroupWithCategories()
         {
-            var json = MockJsonData.CategoryGroupWithCategories;
-            var categoryGroupResponse = JsonConvert.DeserializeObject<CategoryGroupWithCategories>(json);
+            CategoryGroupWithCategories categoryGroupWithCategories;
+            if (_testObject == null)
+            {
+                var json = MockJsonData.CategoryGroupWithCategories;
+                categoryGroupWithCategories = JsonConvert.DeserializeObject<CategoryGroupWithCategories>(json);
+            }
+            else
+                categoryGroupWithCategories = _testObject as CategoryGroupWithCategories;
 
-            Assert.IsNotNull(categoryGroupResponse);
+            Assert.IsNotNull(categoryGroupWithCategories);
+            _testObject = categoryGroupWithCategories; this.CategoryGroup();
+            categoryGroupWithCategories.Categories.ForEach(cg =>
+            {
+                Assert.IsNotNull(cg);
+                _testObject = cg as Category; this.Category();
+            });
         }
 
         [TestMethod]
         public void MonthDetail()
         {
-            var json = MockJsonData.MonthDetail;
-            var month = JsonConvert.DeserializeObject<MonthDetail>(json);
+            MonthDetail month;
+            if (_testObject == null)
+            {
+                var json = MockJsonData.MonthDetail;
+                month = JsonConvert.DeserializeObject<MonthDetail>(json);
+            }
+            else
+                month = _testObject as MonthDetail;
 
             Assert.IsNotNull(month);
+            // TODO: add missing assertions
         }
 
         [TestMethod]
         public void BudgetMonthResponse()
         {
             var json = MockJsonData.BudgetMonthResponse;
-            var month = JsonConvert.DeserializeObject<MonthDetailResponse>(json);
+            var monthResponse = JsonConvert.DeserializeObject<MonthDetailResponse>(json);
 
-            Assert.IsNotNull(month);
+            Assert.IsNotNull(monthResponse);
+            Assert.IsNotNull(monthResponse.Data);
+            Assert.IsNotNull(monthResponse.Data.Month);
+            _testObject = monthResponse.Data.Month as MonthDetail; this.MonthDetail();
         }
 
         [TestMethod]
         public void MonthSummary()
         {
-            var json = MockJsonData.MonthSummary;
-            var month = JsonConvert.DeserializeObject<MonthSummary>(json);
+            MonthSummary month;
+            if (_testObject == null)
+            {
+                var json = MockJsonData.MonthSummary;
+                month = JsonConvert.DeserializeObject<MonthSummary>(json);
+            }
+            else
+                month = _testObject as MonthSummary;
 
             Assert.IsNotNull(month);
+            // TODO: add missing assertions
         }
 
         [TestMethod]
@@ -190,6 +281,13 @@ namespace YNABTests
             var months = JsonConvert.DeserializeObject<MonthSummaryResponse>(json);
 
             Assert.IsNotNull(months);
+            Assert.IsNotNull(months.Data);
+            Assert.IsNotNull(months.Data.Months);
+            months.Data.Months.ForEach((month) =>
+            {
+                Assert.IsNotNull(month);
+                _testObject = month; this.MonthSummary();
+            });
         }
 
         [TestMethod]

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace ynab
 {
-    public class BudgetSummary
+    public class BudgetSummary : BudgetSettings
     {
         [JsonProperty("id")]
         public string Id { get; set; }
@@ -20,12 +20,6 @@ namespace ynab
 
         [JsonProperty("last_month")]
         public string LastMonth { get; set; }
-
-        [JsonProperty("date_format")]
-        public DateFormat DateFormat { get; set; }
-
-        [JsonProperty("currency_format")]
-        public CurrencyFormat CurrencyFormat { get; set; } 
     }
 
     public class BudgetSummaryResponse

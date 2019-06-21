@@ -2,7 +2,12 @@
 namespace YNABTests
 {
     public static class MockJsonData
-    {
+    { 
+        public static string GetFields(this string jsonObject)
+        {
+            return jsonObject.Trim().Substring(1, jsonObject.Length - 2);
+        }
+
         public static string User = @"{
             ""id"" : ""user-id-1""
         }";
@@ -40,20 +45,8 @@ namespace YNABTests
             ""name"": ""Budget Name 1"",
             ""last_modified_on"": ""2019-01-01T23:59:59+00:00"",
             ""first_month"": ""2018-12-01"",
-            ""last_month"": ""2019-06-01"",
-            ""date_format"": {
-                ""format"": ""DD/MM/YYYY""
-            },
-            ""currency_format"": {
-                ""iso_code"": ""EUR"",
-                ""example_format"": ""123 456,78"",
-                ""decimal_digits"": 2,
-                ""decimal_separator"": "","",
-                ""symbol_first"": false,
-                ""group_separator"": "" "",
-                ""currency_symbol"": ""€"",
-                ""display_symbol"": true
-            }
+            ""last_month"": ""2019-06-01"", " +
+            BudgetSettings.GetFields() + @"
         }";
 
         public static string BudgetSummaryResponse = @"{
@@ -62,8 +55,24 @@ namespace YNABTests
             }
         }";
 
-        public static string BudgetDetail = @"{
-            
+        public static string BudgetDetail = @"{ " + 
+            BudgetSummary.GetFields() + @",
+            ""accounts"" : [ " + Account + ", " + Account + @" ],
+            ""payees"" : [ " + Payee + ", " + Payee + @" ],
+            ""payee_locations"" : [ ],
+            ""category_groups"" : [ " + CategoryGroup + @" ],
+            ""categories"" : [ " + Category + @" ],
+            ""months"" : [ " + MonthDetail + @" ],
+            ""transactions"" : [ " + Transaction1 + @" ],
+            ""subtransactions"" : [ " + SubTransaction1 + ", " + SubTransaction2 + @" ],
+            ""scheduled_transactions"" : [ ],
+            ""scheduled_subtransactions"" : [ ],
+        }";
+
+        public static string BudgetDetailResponse = @"{
+            ""data"" : {
+                ""budget"" : " + BudgetDetail + @"
+            }
         }";
 
         public static string Account = @"{
@@ -132,22 +141,6 @@ namespace YNABTests
             }
         }";
 
-        public static string MonthDetail = @"{
-            ""month"": ""2019-06-01"",
-            ""note"": null,
-            ""income"": 0,
-            ""budgeted"": 150000,
-            ""activity"": -1483490,
-            ""to_be_budgeted"": 5619740,
-            ""age_of_money"": 152,
-            ""deleted"": false,
-            ""categories"": [" + Category + ", " + Category + ", " + Category + @"]
-        }";
-
-        public static string BudgetMonthResponse = @"{
-            ""data"" : { ""month"" : " + MonthDetail + @" }
-        }";
-
         public static string MonthSummary = @"{
             ""month"": ""2019-06-01"",
             ""note"": null,
@@ -157,6 +150,15 @@ namespace YNABTests
             ""to_be_budgeted"": 5619740,
             ""age_of_money"": 152,
             ""deleted"": false
+        }";
+
+        public static string MonthDetail = @"{
+            " + MonthSummary.GetFields() + @",
+            ""categories"": [" + Category + ", " + Category + ", " + Category + @"]
+        }";
+
+        public static string BudgetMonthResponse = @"{
+            ""data"" : { ""month"" : " + MonthDetail + @" }
         }";
 
         public static string BudgetMonthsResponse = @"{
@@ -254,10 +256,5 @@ namespace YNABTests
         public static string TransactionResponse = @"{
             ""data"" : { ""transaction"" : " + Transaction1 + @"}
         }";
-
-        public static string GetFields(this string jsonObject)
-        {
-            return jsonObject.Trim().Substring(1, jsonObject.Length - 2);
-        }
     }
 }
