@@ -54,27 +54,7 @@ namespace YNABTests
                 ""budgets"": [" + BudgetSummary + ", " + BudgetSummary + ", " + BudgetSummary + @"]
             }
         }";
-
-        public static string BudgetDetail = @"{ " + 
-            BudgetSummary.GetFields() + @",
-            ""accounts"" : [ " + Account + ", " + Account + @" ],
-            ""payees"" : [ " + Payee + ", " + Payee + @" ],
-            ""payee_locations"" : [ ],
-            ""category_groups"" : [ " + CategoryGroup + @" ],
-            ""categories"" : [ " + Category + @" ],
-            ""months"" : [ " + MonthDetail + @" ],
-            ""transactions"" : [ " + Transaction1 + @" ],
-            ""subtransactions"" : [ " + SubTransaction1 + ", " + SubTransaction2 + @" ],
-            ""scheduled_transactions"" : [ ],
-            ""scheduled_subtransactions"" : [ ],
-        }";
-
-        public static string BudgetDetailResponse = @"{
-            ""data"" : {
-                ""budget"" : " + BudgetDetail + @"
-            }
-        }";
-
+        
         public static string Account = @"{
             ""id"": ""aaa-bbb-ccc"",
             ""name"": ""Payroll account"",
@@ -98,21 +78,21 @@ namespace YNABTests
         }";
 
         public static string Category = @"{
-            ""id"": ""eee-fff-ggg"",
-            ""category_group_id"": ""bbb-ccc-ddd"",
+            ""id"": ""category-id-1"",
+            ""category_group_id"": ""category-group-id-1"",
             ""name"": ""Family leisure"",
-            ""hidden"": false,
+            ""hidden"": true,
             ""original_category_group_id"": null,
-            ""note"": null,
-            ""budgeted"": 0,
-            ""activity"": 0,
-            ""balance"": 0,
+            ""note"": ""category note 1"",
+            ""budgeted"": 1000,
+            ""activity"": 2000,
+            ""balance"": -1000,
             ""goal_type"": null,
             ""goal_creation_month"": null,
             ""goal_target"": 0,
             ""goal_target_month"": null,
             ""goal_percentage_complete"": null,
-            ""deleted"": false
+            ""deleted"": true
         }";
 
         public static string CategoryResponse = @"{
@@ -120,41 +100,37 @@ namespace YNABTests
         }";
 
         public static string CategoryGroup = @"{
-                ""id"": ""eee-eee-eee"",
-                ""name"": ""Group Category"",
-                ""hidden"": false,
-                ""deleted"": false
+                ""id"": ""category-group-id-1"",
+                ""name"": ""Category Group 1"",
+                ""hidden"": true,
+                ""deleted"": true
         }";
 
         public static string CategoryGroupWithCategories = @"{
-                ""id"": ""eee-eee-eee"",
-                ""name"": ""Group Category"",
-                ""hidden"": false,
-                ""deleted"": false,
+                " + CategoryGroup.GetFields() + @",
                 ""categories"": [" + Category + ", " + Category + ", " + Category + @"]
         }";
 
         public static string CategoriesResponse = @"{
             ""data"" : { ""category_groups"" : [ " +
-                CategoryGroupWithCategories + ", " +
                 CategoryGroupWithCategories + @"]
             }
         }";
 
         public static string MonthSummary = @"{
             ""month"": ""2019-06-01"",
-            ""note"": null,
-            ""income"": 0,
+            ""note"": ""month note"",
+            ""income"": 1000,
             ""budgeted"": 150000,
-            ""activity"": -1483490,
-            ""to_be_budgeted"": 5619740,
+            ""activity"": -148340,
+            ""to_be_budgeted"": 561970,
             ""age_of_money"": 152,
-            ""deleted"": false
+            ""deleted"": true
         }";
 
         public static string MonthDetail = @"{
             " + MonthSummary.GetFields() + @",
-            ""categories"": [" + Category + ", " + Category + ", " + Category + @"]
+            ""categories"": [" + Category + @"]
         }";
 
         public static string BudgetMonthResponse = @"{
@@ -225,36 +201,124 @@ namespace YNABTests
             ""deleted"": false
         }";
 
-        public static string Transaction1 = @"{
+        public static string TransactionSummary = @"{
             ""id"": ""transaction-id-1"",
             ""date"": ""2019-06-04"",
             ""amount"": -92600,
             ""memo"": ""memo transaction 1"",
             ""cleared"": ""reconciled"",
             ""approved"": true,
-            ""flag_color"": null,
-            ""account_id"": ""aaa-bbb-ccc"",
-            ""account_name"": ""Payroll account"",
+            ""flag_color"": ""yellow"",
+            ""account_id"": ""account-id-1"",
             ""payee_id"": ""payee-id-1"",
-            ""payee_name"": ""Payee 1"",
             ""category_id"": ""category-split-id-1"",
-            ""category_name"": ""Split (Multiple Categories)..."",
             ""transfer_account_id"": null,
             ""transfer_transaction_id"": null,
             ""matched_transaction_id"": null,
             ""import_id"": null,
-            ""deleted"": false,        
+            ""deleted"": true
+        }";
+
+        public static string TransactionDetail = @"{
+            " + TransactionSummary.GetFields() + @",
+            ""account_name"": ""Payroll account"",
+            ""payee_name"": ""Payee 1"",
+            ""category_name"": ""Split (Multiple Categories)..."",
             ""subtransactions"": [" + SubTransaction1 + ", " + SubTransaction2 + @"]
         }";
 
         public static string TransactionsResponse = @"{
-            ""data"": { ""transactions"" : [" + Transaction1 + ", " + Transaction1 + @"],
+            ""data"": { ""transactions"" : [" + TransactionDetail + @"],
                 ""server_knowledge"": 2000
             }
         }";
 
         public static string TransactionResponse = @"{
-            ""data"" : { ""transaction"" : " + Transaction1 + @"}
+            ""data"" : { ""transaction"" : " + TransactionDetail + @"}
+        }";
+
+        public static string TransactionsResponseForAccounts = @"{
+            ""data"": { ""transactions"" : [" + TransactionDetail + @"],
+                ""server_knowledge"": 2011
+            }
+        }";
+
+        public static string TransactionsResponseForCategories = @"{
+            ""data"": { ""transactions"" : [" + TransactionDetail + @"],
+                ""server_knowledge"": 2022
+            }
+        }";
+
+        public static string TransactionsResponseForPayees = @"{
+            ""data"": { ""transactions"" : [" + TransactionDetail + @"],
+                ""server_knowledge"": 2033
+            }
+        }";
+
+        public static string ScheduledSubTransaction = @"{
+            ""id"": ""scheduled-subtransaction-id-1"",
+            ""scheduled_transaction_id"": ""scheduled-tranaction-id-1"",
+            ""amount"": -13640,
+            ""memo"": ""subtransaction memo"",
+            ""payee_id"": ""payee-id-1"",
+            ""category_id"": ""category-id-1"",
+            ""transfer_account_id"": ""transfer-account-id-1"",
+            ""deleted"": true
+        }";
+
+        public static string ScheduledTransactionSummary = @"{
+            ""id"": ""scheduled-transaction-id-1"",
+            ""date_first"": ""2019-02-01"",
+            ""date_next"": ""2019-07-01"",
+            ""frequency"": ""monthly"",
+            ""amount"": -46640,
+            ""memo"": ""scheduled transaction memo"",
+            ""flag_color"": ""yellow"",
+            ""account_id"": ""account-id-1"",
+            ""payee_id"": ""payee-id-1"",
+            ""category_id"": ""category-id-1"",
+            ""transfer_account_id"": ""transfer-account-id-1"",
+            ""deleted"": true
+        }";
+
+        public static string ScheduledTransactionDetail = @"{
+            " + ScheduledTransactionSummary.GetFields() + @",
+            ""account_name"": ""account name 1"",
+            ""payee_name"": ""payee name 1"",
+            ""category_name"": ""category name 1"",
+            ""subtransactions"": [ " + ScheduledSubTransaction + @" ]
+        }";
+
+        public static string ScheduledTransactionResponse = @"{
+            ""data"" : {
+                ""scheduled_transaction"" : " + ScheduledTransactionDetail + @"
+            }
+        }";
+
+        public static string ScheduledTransactionsResponse = @"{
+            ""data"" : {
+                ""scheduled_transactions"" : [" + ScheduledTransactionDetail + @" ]
+            }
+        }";
+
+        public static string BudgetDetail = @"{ " +
+            BudgetSummary.GetFields() + @",
+            ""accounts"" : [ " + Account + @" ],
+            ""payees"" : [ " + Payee + @" ],
+            ""payee_locations"" : [ ],
+            ""category_groups"" : [ " + CategoryGroup + @" ],
+            ""categories"" : [ " + Category + @" ],
+            ""months"" : [ " + MonthDetail + @" ],
+            ""transactions"" : [ " + TransactionSummary + @" ],
+            ""subtransactions"" : [ " + SubTransaction1 + ", " + SubTransaction2 + @" ],
+            ""scheduled_transactions"" : [ " + ScheduledTransactionSummary + @" ],
+            ""scheduled_subtransactions"" : [ " + ScheduledSubTransaction + @"],
+        }";
+
+        public static string BudgetDetailResponse = @"{
+            ""data"" : {
+                ""budget"" : " + BudgetDetail + @"
+            }
         }";
     }
 }

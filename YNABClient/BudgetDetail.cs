@@ -27,9 +27,11 @@ namespace ynab
         [JsonProperty("subtransactions")]
         public List<SubTransaction> SubTransactions { get; set; }
 
-        //scheduled_transactions
+        [JsonProperty("scheduled_transactions")]
+        public List<ScheduledTransactionSummary> ScheduledTransactions { get; set; }
 
-        //scheduled_subtransactions
+        [JsonProperty("scheduled_subtransactions")]
+        public List<ScheduledSubTransaction> ScheduledSubTransactions { get; set; }
     }
 
     public class BudgetDetailWrapper

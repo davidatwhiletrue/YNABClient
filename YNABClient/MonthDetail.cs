@@ -4,32 +4,8 @@ using Newtonsoft.Json;
 
 namespace ynab
 {
-    public class MonthDetail
+    public class MonthDetail : MonthSummary
     {
-        [JsonProperty("month")]
-        public string Month { get; set; }
-
-        [JsonProperty("note")]
-        public string Note { get; set; }
-
-        [JsonProperty("income")]
-        public long Income { get; set; }
-
-        [JsonProperty("budgeted")]
-        public long Budgeted { get; set; }
-
-        [JsonProperty("activity")]
-        public long Activity { get; set; }
-
-        [JsonProperty("to_be_budgeted")]
-        public long ToBeBudgeted { get; set; }
-
-        [JsonProperty("age_of_money")]
-        public long AgeOfMoney { get; set; }
-
-        [JsonProperty("deleted")]
-        public bool Deleted { get; set; }
-
         [JsonProperty("categories")]
         public List<Category> Categories { get; set; }
     }

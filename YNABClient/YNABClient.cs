@@ -51,6 +51,19 @@ namespace ynab
             return budgetSummaryResponse;
         }
 
+        public async Task<BudgetDetailResponse> GetBudgetById(string budgetId)
+        {
+            var response = await _client.GetAsync($"budgets/{budgetId}");
+
+            response.EnsureSuccessStatusCode();
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            var budgetDetailResponse = JsonConvert.DeserializeObject<BudgetDetailResponse>(json);
+
+            return budgetDetailResponse;
+        }
+
         public async Task<BudgetSettingsResponse> GetBudgetSettingsById(string budgetId)
         {
             var response = await _client.GetAsync($"budgets/{budgetId}/settings");
@@ -85,7 +98,7 @@ namespace ynab
             return accountsResponse;
         }
 
-        public async Task<AccountResponse> GetAccount(string budgetId, string accountId)
+        public async Task<AccountResponse> GetAccountById(string budgetId, string accountId)
         {
             var response = await _client.GetAsync($"budgets/{budgetId}/accounts/{accountId}");
 
@@ -135,6 +148,7 @@ namespace ynab
 
             return categoryResponse;
         }
+
 
         public async Task<CategoryResponse> GetMonthCategoryById(string budgetId, string month, string categoryId)
         {
@@ -265,9 +279,9 @@ namespace ynab
             return transactionResponse;
         }
 
-        public async Task<TransactionsResponse> GetTransactionsByAccount(string budgetId, string accountId, string since_date, string type, string last_knowledge_of_server = null)
+        private async Task<TransactionsResponse> GetTransactionsBy(string model, string budgetId, string modelId, string since_date, string type, string last_knowledge_of_server = null)
         {
-            UriBuilder baseUri = new UriBuilder($"{_client.BaseAddress}budgets/{budgetId}/accounts/{accountId}");
+            UriBuilder baseUri = new UriBuilder($"{_client.BaseAddress}budgets/{budgetId}/{model}/{modelId}/transactions");
 
             if (since_date != null)
             {
@@ -307,8 +321,60 @@ namespace ynab
 
             return transactionsResponse;
         }
+
+        public async Task<TransactionsResponse> GetTransactionsByAccount(string budgetId, string accountId, string since_date, string type, string last_knowledge_of_server = null)
+        {
+            return await GetTransactionsBy("accounts", budgetId, accountId, since_date, type, last_knowledge_of_server);
+        }
+
+        public async Task<TransactionsResponse> GetTransactionsByCategory(string budgetId, string categoryId, string since_date, string type, string last_knowledge_of_server = null)
+        {
+            return await GetTransactionsBy("categories", budgetId, categoryId, since_date, type, last_knowledge_of_server);
+        }
+
+        public async Task<TransactionsResponse> GetTransactionsByPayee(string budgetId, string payeeId, string since_date, string type, string last_knowledge_of_server = null)
+        {
+            return await GetTransactionsBy("payees", budgetId, payeeId, since_date, type, last_knowledge_of_server);
+        }
+
+        public async Task<ScheduledTransactionsResponse> GetScheduledTransactions(string budgetId)
+        {
+            var query = $"budgets/{budgetId}/scheduled_transactions";
+
+            var response = await _client.GetAsync(query);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var j = await response.Content.ReadAsStringAsync();
+                throw new YNABClientException(j);
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            var transactionsResponse = JsonConvert.DeserializeObject<ScheduledTransactionsResponse>(json);
+
+            return transactionsResponse;
+        }
+
+        public async Task<ScheduledTransactionResponse> GetScheduledTransactionById(string budgetId, string scheduledTransactionId)
+        {
+            var query = $"budgets/{budgetId}/scheduled_transactions/{scheduledTransactionId}";
+
+            var response = await _client.GetAsync(query);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var j = await response.Content.ReadAsStringAsync();
+                throw new YNABClientException(j);
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            var transactionResponse = JsonConvert.DeserializeObject<ScheduledTransactionResponse>(json);
+
+            return transactionResponse;
+        }
     }
 }
-
 
 // curl -H "Authorization: Bearer 878dc3ab1201afce375c017cc4c935c6f69d4515934a752f3286f16a40f772ff" https://api.youneedabudget.com/v1/budgets
