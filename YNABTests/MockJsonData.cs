@@ -139,7 +139,8 @@ namespace YNABTests
 
         public static string BudgetMonthsResponse = @"{
             ""data"" : {
-                ""months"" : [" + MonthSummary + ", " + MonthSummary + @"]
+                ""months"" : [" + MonthSummary + ", " + MonthSummary + @"],
+                ""server_knowledge"": 5000
             }
         }";
 

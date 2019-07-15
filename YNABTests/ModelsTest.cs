@@ -366,6 +366,7 @@ namespace YNABTests
                 Assert.IsNotNull(month);
                 _testObject = month; this.MonthSummary();
             });
+            Assert.AreEqual(5000, months.Data.ServerKnowledge);
         }
 
         [TestMethod]
